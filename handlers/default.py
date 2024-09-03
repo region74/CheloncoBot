@@ -30,6 +30,10 @@ async def command_help(message: Message, command: CommandObject) -> None:
 async def command_help(message: Message) -> None:
     await message.answer(f'При возникновении проблем или багов: {"https://t.me/ignatov23"}')
 
+@router.message(StateFilter(None), Command('report'))
+async def command_help(message: Message) -> None:
+    await message.answer(f'Какой отчет нужно получить?')
+
 
 @router.message(StateFilter(None), Command('info'))
 async def command_help(message: Message) -> None:
