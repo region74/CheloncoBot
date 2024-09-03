@@ -42,6 +42,19 @@ services:
     networks:
       - compose_net
 
+  telegram_bot:
+    build:
+      context: . # Путь к директории с Dockerfile
+      dockerfile: Dockerfile # Имя Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+    container_name: telegram_bot
+    depends_on:
+      - postgres
+      - pgadmin
+    networks:
+      - compose_net
+
 #volumes:
 #  pgdata:
 #    driver: local # Локальное сохранение данных
