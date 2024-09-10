@@ -1,8 +1,10 @@
 from aiogram import Router, F, Bot
-from aiogram.filters import CommandStart, Command, StateFilter
+from aiogram.filters import StateFilter
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from database.orm_query import orm_add_device
 from fsm.states import GetDevice
 
 router = Router()
@@ -15,8 +17,17 @@ async def get_device(callback: CallbackQuery, state: FSMContext):
 
 
 @router.message(GetDevice.get_comment)
-async def get_device_comment(message: Message, state: FSMContext, bot: Bot):
+async def get_device_comment(message: Message, state: FSMContext, session: AsyncSession):
     if message.text:
+        # TODO пример убрать
+        data = {
+            'number': float(124343421),
+            'category': 'printer',
+            'firma': 'hp',
+            'model': 'm404dw'
+        }
+        await orm_add_device(session, data)
+
         await message.answer('Спасибо! Данные сохранены ✅')
         await state.set_state(None)
     else:
