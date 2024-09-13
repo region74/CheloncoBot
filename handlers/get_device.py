@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_add_device
+from database.orm_query import orm_add_device, orm_get_device
 from fsm.states import GetDevice
 
 router = Router()
@@ -19,6 +19,11 @@ async def get_device(callback: CallbackQuery, state: FSMContext):
 @router.message(GetDevice.get_comment)
 async def get_device_comment(message: Message, state: FSMContext, session: AsyncSession):
     if message.text:
+        data = await state.get_data()
+        add = {'comment': message.text}
+        data.update(add)
+        await orm_get_device(session, data)
+        await state.clear()
         await message.answer('Спасибо! Данные сохранены ✅')
         await state.set_state(None)
     else:

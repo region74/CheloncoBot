@@ -12,9 +12,8 @@ router = Router()
 
 
 @router.message(StateFilter(None), CommandStart())
-async def command_help(message: Message, command: CommandObject, session: AsyncSession) -> None:
+async def command_help(message: Message, state: FSMContext, command: CommandObject, session: AsyncSession) -> None:
     device_data = command.args
-    print(device_data)
     if device_data:
         info = device_data.split('_')
         invenarny = info[3].replace('-', '/')
@@ -32,6 +31,7 @@ async def command_help(message: Message, command: CommandObject, session: AsyncS
         result = await orm_add_device(session, data)
         if result:
             await message.answer(result)
+        await state.update_data(**data)
         await message.answer('Что с ним делать?', reply_markup=device_kb())
     else:
         await message.answer('Устройство не распознано! ⚠️\nПроверьте корректность QR-кода')
