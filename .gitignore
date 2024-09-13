@@ -8,7 +8,6 @@ venv/
 
 db.sqlite3
 credentials/
-data/
 .db
 .db.*
 *.db
