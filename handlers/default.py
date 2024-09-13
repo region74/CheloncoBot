@@ -3,24 +3,35 @@ from aiogram.filters import CommandStart, Command, StateFilter
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.filters.command import CommandObject, Command
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from database.orm_query import orm_add_device
 from keyboards.boards import device_kb
 
 router = Router()
 
 
 @router.message(StateFilter(None), CommandStart())
-async def command_help(message: Message, command: CommandObject) -> None:
+async def command_help(message: Message, command: CommandObject, session: AsyncSession) -> None:
     device_data = command.args
+    print(device_data)
     if device_data:
         info = device_data.split('_')
+        invenarny = info[3].replace('-', '/')
         type = info[0]
         company = info[1]
         model = info[2]
-        invenarny = info[3]
-        place = info[4]
         await message.answer(
-            f'Распознано устройство✅\nТип: {type}\nФирма: {company}\nМодель: {model}\nИнв.номер: {invenarny}\nМесто: {place}')
+            f'Распознано устройство✅\nТип: {type}\nФирма: {company}\nМодель: {model}\nИнв.номер: {invenarny}\n')
+        data = {
+            'number': str(invenarny),
+            'category': str(type),
+            'model': str(model),
+            'firma': str(company)
+        }
+        result = await orm_add_device(session, data)
+        if result:
+            await message.answer(result)
         await message.answer('Что с ним делать?', reply_markup=device_kb())
     else:
         await message.answer('Устройство не распознано! ⚠️\nПроверьте корректность QR-кода')
@@ -29,6 +40,7 @@ async def command_help(message: Message, command: CommandObject) -> None:
 @router.message(StateFilter(None), Command('help'))
 async def command_help(message: Message) -> None:
     await message.answer(f'При возникновении проблем или багов: {"https://t.me/ignatov23"}')
+
 
 @router.message(StateFilter(None), Command('report'))
 async def command_help(message: Message) -> None:

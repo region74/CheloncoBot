@@ -19,15 +19,6 @@ async def get_device(callback: CallbackQuery, state: FSMContext):
 @router.message(GetDevice.get_comment)
 async def get_device_comment(message: Message, state: FSMContext, session: AsyncSession):
     if message.text:
-        # TODO пример убрать
-        data = {
-            'number': float(124343421),
-            'category': 'printer',
-            'firma': 'hp',
-            'model': 'm404dw'
-        }
-        await orm_add_device(session, data)
-
         await message.answer('Спасибо! Данные сохранены ✅')
         await state.set_state(None)
     else:

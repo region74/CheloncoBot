@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
-from config import DB_LITE_URL
+from config import DB_LITE_URL, POSTGRES_URL
 from database.models import Base
 
-engine = create_async_engine(DB_LITE_URL, echo=True)
+# engine = create_async_engine(DB_LITE_URL, echo=True)
+engine = create_async_engine(POSTGRES_URL, echo=True)
 session_maker = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 
