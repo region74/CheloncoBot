@@ -47,6 +47,7 @@ class Movement(Base):
     __tablename__ = 'movement'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     device_id: Mapped[int] = mapped_column(ForeignKey('device.id', ondelete='CASCADE'), nullable=False)
+    # TODO тут проблема с типами данных при записи
     place_from: Mapped[int] = mapped_column(nullable=False)
     place_to: Mapped[int] = mapped_column(nullable=False)
 

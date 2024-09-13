@@ -48,6 +48,7 @@ services:
       dockerfile: Dockerfile # Имя Dockerfile
       args:
         GITHUB_TOKEN: ${GITHUB_TOKEN}
+      no_cache: true
     container_name: telegram_bot
     depends_on:
       - postgres
