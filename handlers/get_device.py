@@ -1,11 +1,11 @@
-from aiogram import Router, F, Bot
+from aiogram import Router, F
 from aiogram.filters import StateFilter
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data.place import departments
-from database.orm_query import orm_add_device, orm_get_device, orm_update_device
+from database.orm_query import orm_get_device, orm_update_device
 from fsm.states import GetDevice
 from keyboards.boards import device_place_change
 
@@ -31,6 +31,7 @@ async def query_place(callback: CallbackQuery, state: FSMContext):
     else:
         await callback.message.answer('Неизвестная команда, сброс состояния...')
         await state.set_state(None)
+        await state.clear()
 
 
 @router.message(GetDevice.input_place)
@@ -38,7 +39,7 @@ async def input_place(message: Message, state: FSMContext, session: AsyncSession
     if message.text.isdigit():
         target_place = int(message.text.lower())
         data = await state.get_data()
-        add = {'place': int(message.text)}
+        add = {'place': target_place}
         data.update(add)
         await orm_update_device(session, data)
         await message.answer('Данные обновлены, теперь укажите комментарий:')
@@ -46,11 +47,6 @@ async def input_place(message: Message, state: FSMContext, session: AsyncSession
     else:
         await message.answer('Введите порядковый номер отделения, целым числом!')
 
-
-# @router.callback_query(StateFilter(None), F.data == "get_device")
-# async def get_device(callback: CallbackQuery, state: FSMContext):
-#     await callback.message.answer('Укажите комментарий по приему:')
-#     await state.set_state(GetDevice.get_comment)
 
 @router.message(GetDevice.get_comment)
 async def get_device_comment(message: Message, state: FSMContext, session: AsyncSession):
