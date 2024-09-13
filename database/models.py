@@ -16,16 +16,18 @@ class Device(Base):
     category: Mapped[str] = mapped_column(String(50), nullable=False)
     firma: Mapped[str] = mapped_column(String(50), nullable=False)
     model: Mapped[str] = mapped_column(Text)
+    place: Mapped[str] = mapped_column(String(150), nullable=True, default='Undefined')
 
     device_gets = relationship("DeviceGet", back_populates="device")
     device_sends = relationship("DeviceSend", back_populates="device")
+    device_movement = relationship("Movement", back_populates="device")
 
 
 class DeviceGet(Base):
     __tablename__ = 'device_get'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    device_id: Mapped[int] = mapped_column(ForeignKey('device.id'), nullable=False)
+    device_id: Mapped[int] = mapped_column(ForeignKey('device.id', ondelete='CASCADE'), nullable=False)
     comment: Mapped[str] = mapped_column(Text, nullable=False)
 
     device = relationship("Device", back_populates="device_gets")
@@ -35,7 +37,17 @@ class DeviceSend(Base):
     __tablename__ = 'device_send'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    device_id: Mapped[int] = mapped_column(ForeignKey('device.id'), nullable=False)
+    device_id: Mapped[int] = mapped_column(ForeignKey('device.id', ondelete='CASCADE'), nullable=False)
     comment: Mapped[str] = mapped_column(Text, nullable=False)
 
     device = relationship("Device", back_populates="device_sends")
+
+
+class Movement(Base):
+    __tablename__ = 'movement'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    device_id: Mapped[int] = mapped_column(ForeignKey('device.id', ondelete='CASCADE'), nullable=False)
+    place_from: Mapped[int] = mapped_column(nullable=False)
+    place_to: Mapped[int] = mapped_column(nullable=False)
+
+    device = relationship("Device", back_populates="device_movement")

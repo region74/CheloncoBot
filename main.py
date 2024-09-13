@@ -20,15 +20,9 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%d/%m/%Y %H:%M:%S
 bot = Bot(token=TOKEN_BOT, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
 
-async def on_startup(bot):
-    run_param = False
-    if run_param:
-        await drop_db()
+
+async def on_startup():
     await create_db()
-
-
-async def on_shutdown(bot):
-    logging.warning('Бот лег!')
 
 
 async def main():
@@ -37,12 +31,8 @@ async def main():
         await create_db()
 
         dp.startup.register(on_startup)
-        dp.shutdown.register(on_shutdown)
         dp.update.middleware(DataBaseSession(session_pool=session_maker))
-
-        dp.include_router(default.router)
-        dp.include_router(get_device.router)
-        dp.include_router(send_device.router)
+        dp.include_routers(default.router, get_device.router, send_device.router)
 
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)

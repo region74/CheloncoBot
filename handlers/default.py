@@ -5,14 +5,20 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters.command import CommandObject, Command
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from config import APPROVE_USERS
 from database.orm_query import orm_add_device
+from filters.default import ChatUserFilter
 from keyboards.boards import device_kb
 
 router = Router()
 
+# Фильтрация разрешенных пользователей
+router.message.filter(ChatUserFilter(APPROVE_USERS))
+router.callback_query.filter(ChatUserFilter(APPROVE_USERS))
+
 
 @router.message(StateFilter(None), CommandStart())
-async def command_help(message: Message, state: FSMContext, command: CommandObject, session: AsyncSession) -> None:
+async def command_start(message: Message, state: FSMContext, command: CommandObject, session: AsyncSession) -> None:
     device_data = command.args
     if device_data:
         info = device_data.split('_')
@@ -21,7 +27,7 @@ async def command_help(message: Message, state: FSMContext, command: CommandObje
         company = info[1]
         model = info[2]
         await message.answer(
-            f'Распознано устройство✅\nТип: {type}\nФирма: {company}\nМодель: {model}\nИнв.номер: {invenarny}\n')
+            f'Распознано устройство✅')
         data = {
             'number': str(invenarny),
             'category': str(type),
@@ -43,12 +49,12 @@ async def command_help(message: Message) -> None:
 
 
 @router.message(StateFilter(None), Command('report'))
-async def command_help(message: Message) -> None:
+async def command_report(message: Message) -> None:
     await message.answer(f'Какой отчет нужно получить?')
 
 
 @router.message(StateFilter(None), Command('info'))
-async def command_help(message: Message) -> None:
+async def command_info(message: Message) -> None:
     await message.answer(f'Полноценная инструкция по работе с ботом появится после реализации функционала')
 
 

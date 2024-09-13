@@ -8,3 +8,12 @@ def device_kb():
     ]]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     return keyboard
+
+
+def device_place_change():
+    buttons = [[
+        types.InlineKeyboardButton(text="Изменить", callback_data="change_place"),
+        types.InlineKeyboardButton(text="Оставить", callback_data="skip_place"),
+    ]]
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    return keyboard

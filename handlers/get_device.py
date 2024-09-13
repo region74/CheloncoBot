@@ -4,17 +4,53 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_add_device, orm_get_device
+from data.place import departments
+from database.orm_query import orm_add_device, orm_get_device, orm_update_device
 from fsm.states import GetDevice
+from keyboards.boards import device_place_change
 
 router = Router()
 
 
 @router.callback_query(StateFilter(None), F.data == "get_device")
 async def get_device(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer('Укажите комментарий по приему:')
-    await state.set_state(GetDevice.get_comment)
+    await callback.message.answer('Будем менять местоположение (отделение) устройства?',
+                                  reply_markup=device_place_change())
+    await state.set_state(GetDevice.get_place)
 
+
+@router.callback_query(GetDevice.get_place)
+async def query_place(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'change_place':
+        formatted_message = '\n'.join(f"{num}. {name}" for num, name in departments.items())
+        await callback.message.answer(f'Укажите новый НОМЕР отделения из списка:\n {formatted_message}')
+        await state.set_state(GetDevice.input_place)
+    elif callback.data == 'skip_place':
+        await callback.message.answer('Хорошо, тогда укажите комментарий:')
+        await state.set_state(GetDevice.get_comment)
+    else:
+        await callback.message.answer('Неизвестная команда, сброс состояния...')
+        await state.set_state(None)
+
+
+@router.message(GetDevice.input_place)
+async def input_place(message: Message, state: FSMContext, session: AsyncSession):
+    if message.text.isdigit():
+        target_place = int(message.text.lower())
+        data = await state.get_data()
+        add = {'place': int(message.text)}
+        data.update(add)
+        await orm_update_device(session, data)
+        await message.answer('Данные обновлены, теперь укажите комментарий:')
+        await state.set_state(GetDevice.get_comment)
+    else:
+        await message.answer('Введите порядковый номер отделения, целым числом!')
+
+
+# @router.callback_query(StateFilter(None), F.data == "get_device")
+# async def get_device(callback: CallbackQuery, state: FSMContext):
+#     await callback.message.answer('Укажите комментарий по приему:')
+#     await state.set_state(GetDevice.get_comment)
 
 @router.message(GetDevice.get_comment)
 async def get_device_comment(message: Message, state: FSMContext, session: AsyncSession):
