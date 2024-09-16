@@ -43,6 +43,13 @@ async def command_start(message: Message, state: FSMContext, command: CommandObj
         await message.answer('Устройство не распознано! ⚠️\nПроверьте корректность QR-кода')
 
 
+@router.callback_query(StateFilter(None), F.data == "no_trigger")
+async def cancle_process(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer('Хорошо, процесс завершен.')
+    await state.clear()
+    await state.set_state(None)
+
+
 @router.message(StateFilter(None), Command('help'))
 async def command_help(message: Message) -> None:
     await message.answer(f'При возникновении проблем или багов: {"https://t.me/ignatov23"}')
