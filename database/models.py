@@ -17,6 +17,7 @@ class Device(Base):
     firma: Mapped[str] = mapped_column(String(50), nullable=False)
     model: Mapped[str] = mapped_column(Text)
     place: Mapped[str] = mapped_column(String(150), nullable=True, default='Undefined')
+    last_status: Mapped[int] = mapped_column(nullable=True)
 
     device_gets = relationship("DeviceGet", back_populates="device")
     device_sends = relationship("DeviceSend", back_populates="device")

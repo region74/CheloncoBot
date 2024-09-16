@@ -1,6 +1,6 @@
 from typing import Optional
 
-from data.place import departments
+from data.place import departments, mapping_status
 
 
 def get_department_name(department_number: int) -> str:
@@ -12,3 +12,7 @@ def get_department_id(department_name: str) -> Optional[int]:
         if name == department_name:
             return int(number)
     return 60
+
+
+def get_last_status(status_number: int) -> str:
+    return mapping_status.get(status_number, "Без статуса")
