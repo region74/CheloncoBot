@@ -5,10 +5,16 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound
 from database.models import Device, DeviceGet, DeviceSend, Movement
-from tools import get_department_name
+from tools import get_department_name, get_department_id
 
 
 async def orm_add_device(session: AsyncSession, data: dict) -> Optional[str]:
+    """
+    Метод добавления устройства в БД
+    :param session:
+    :param data:
+    :return:
+    """
     # Сначала проверяем, существует ли устройство с указанными полями
     stmt = select(Device).where(
         Device.number == data['number'],
@@ -38,6 +44,12 @@ async def orm_add_device(session: AsyncSession, data: dict) -> Optional[str]:
 
 
 async def orm_get_device(session: AsyncSession, data: dict):
+    """
+    Метод приемки устройства с ремонта
+    :param session:
+    :param data:
+    :return:
+    """
     stmt = select(Device).where(
         Device.number == data['number'],
         Device.category == data['category'],
@@ -69,6 +81,12 @@ async def orm_get_device(session: AsyncSession, data: dict):
 
 
 async def orm_send_device(session: AsyncSession, data: dict):
+    """
+    Метод отправки устройства в ремонт
+    :param session:
+    :param data:
+    :return:
+    """
     stmt = select(Device).where(
         Device.number == data['number'],
         Device.category == data['category'],
@@ -100,6 +118,12 @@ async def orm_send_device(session: AsyncSession, data: dict):
 
 
 async def orm_update_device(session: AsyncSession, data: dict):
+    """
+    Изменение места устройства и запись перемещения в БД
+    :param session:
+    :param data:
+    :return:
+    """
     # Добавление записи в таблицу перемещения
     stmt = select(Device).where(
         Device.number == data['number'],
@@ -111,7 +135,7 @@ async def orm_update_device(session: AsyncSession, data: dict):
     existing_device = result.scalar_one_or_none()
     move_log = Movement(
         device_id=existing_device.id,
-        place_from=existing_device.place,
+        place_from=get_department_id(existing_device.place),
         place_to=data['place']
     )
     try:
