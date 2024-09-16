@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import String, Text, Float, DateTime, func, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -12,12 +14,13 @@ class Device(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     number: Mapped[str] = mapped_column(String(50), nullable=False)
-    # number: Mapped[float] = mapped_column(Float(asdecimal=False), nullable=False)
     category: Mapped[str] = mapped_column(String(50), nullable=False)
     firma: Mapped[str] = mapped_column(String(50), nullable=False)
     model: Mapped[str] = mapped_column(Text)
     place: Mapped[str] = mapped_column(String(150), nullable=True, default='Undefined')
     last_status: Mapped[int] = mapped_column(nullable=True)
+    date_update_status: Mapped[DateTime] = mapped_column(DateTime, nullable=False,
+                                                         default=datetime.datetime(2024, 1, 1))
 
     device_gets = relationship("DeviceGet", back_populates="device")
     device_sends = relationship("DeviceSend", back_populates="device")
@@ -48,7 +51,6 @@ class Movement(Base):
     __tablename__ = 'movement'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     device_id: Mapped[int] = mapped_column(ForeignKey('device.id', ondelete='CASCADE'), nullable=False)
-    # TODO тут проблема с типами данных при записи
     place_from: Mapped[int] = mapped_column(nullable=False)
     place_to: Mapped[int] = mapped_column(nullable=False)
 

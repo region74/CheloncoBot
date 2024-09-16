@@ -2,7 +2,7 @@ import logging
 import datetime
 from typing import Optional
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound
 from database.models import Device, DeviceGet, DeviceSend, Movement
@@ -42,7 +42,7 @@ async def orm_add_device(session: AsyncSession, data: dict) -> Optional[str]:
         session.add(obj)
         await session.commit()
         logging.info('Добавлено новое устройство')
-        return 'Это новое устройство, оно было добавлено в БД'
+        return f"Это новое устройство, оно было добавлено в БД.\n\nТип:{data['category']}\nФирма: {data['firma']}\nМодель: {data['model']}\nИнв.номер: {data['number']}\nОтделение: Undefined"
 
 
 async def orm_get_device(session: AsyncSession, data: dict) -> Optional[str]:
@@ -90,7 +90,8 @@ async def orm_get_device(session: AsyncSession, data: dict) -> Optional[str]:
         Device.firma == data['firma'],
         Device.model == data['model']
     ).values(
-        last_status=2
+        last_status=2,
+        date_update_status=func.now()
     )
     await session.execute(stmt)
     await session.commit()
@@ -116,7 +117,7 @@ async def orm_send_device(session: AsyncSession, data: dict) -> Optional[str]:
     # Проверка гарантийной даты 3 мес
     current_time = datetime.datetime.now()
     three_months_ago = current_time - datetime.timedelta(days=90)
-    if existing_device.updated > three_months_ago:
+    if existing_device.date_update_status > three_months_ago and existing_device.last_status == 2:
         return 'Не прошло 3 месяцев с последнего ремонта! Отмена отправки в ремонт...'
     if existing_device.last_status == 1:
         return 'Устройство уже в ремонте! Проведите приемку и повторите отправку в ремонт.'
@@ -147,7 +148,8 @@ async def orm_send_device(session: AsyncSession, data: dict) -> Optional[str]:
         Device.firma == data['firma'],
         Device.model == data['model']
     ).values(
-        last_status=1
+        last_status=1,
+        date_update_status=func.now()
     )
     await session.execute(stmt)
     await session.commit()
