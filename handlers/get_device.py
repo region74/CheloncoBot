@@ -54,9 +54,12 @@ async def get_device_comment(message: Message, state: FSMContext, session: Async
         data = await state.get_data()
         add = {'comment': message.text}
         data.update(add)
-        await orm_get_device(session, data)
-        await state.clear()
-        await message.answer('Спасибо! Данные сохранены ✅')
-        await state.set_state(None)
+        result = await orm_get_device(session, data)
+        if result:
+            await message.answer(result)
+        else:
+            await state.clear()
+            await message.answer('Спасибо! Данные сохранены ✅')
+            await state.set_state(None)
     else:
         await message.answer('Укажите комментарий по приемке❗️')
