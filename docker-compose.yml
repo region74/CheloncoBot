@@ -52,14 +52,12 @@ services:
       no_cache: true
     container_name: telegram_bot
     depends_on:
-      - postgres
-      - pgadmin
+      postgres:
+        condition: service_healthy
+      pgadmin:
+        condition: service_started
     networks:
       - compose_net
-
-#volumes:
-#  pgdata:
-#    driver: local # Локальное сохранение данных
 
 networks:
   compose_net:
