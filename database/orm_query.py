@@ -62,8 +62,9 @@ async def orm_get_device(session: AsyncSession, data: dict) -> Optional[str]:
     result = await session.execute(stmt)
     existing_device = result.scalar_one_or_none()
     if existing_device.last_status == 2:
-        return ("Устройство уже принималось с ремонта, отправки в ремонт не было!\nСделайте отправку в ремонт, "
-                "а затем приемку с ремонта.")
+        return (
+            f"Устройство уже принималось с ремонта {existing_device.date_update_status}, отправки в ремонт не было!\nСделайте отправку в ремонт, "
+            "а затем приемку с ремонта.")
     device_get = DeviceGet(
         device_id=existing_device.id,  # Устанавливаем внешний ключ
         comment=data['comment']  # Пример поля, необходимого для DeviceGet
@@ -118,9 +119,9 @@ async def orm_send_device(session: AsyncSession, data: dict) -> Optional[str]:
     current_time = datetime.datetime.now()
     three_months_ago = current_time - datetime.timedelta(days=90)
     if existing_device.date_update_status > three_months_ago and existing_device.last_status == 2:
-        return 'Не прошло 3 месяцев с последнего ремонта! Отмена отправки в ремонт...'
+        return f'Не прошло 3 месяцев с последнего ремонта {existing_device.date_update_status}! Отмена отправки в ремонт...'
     if existing_device.last_status == 1:
-        return 'Устройство уже в ремонте! Проведите приемку и повторите отправку в ремонт.'
+        return f'Устройство уже в ремонте c {existing_device.date_update_status}! Проведите приемку и повторите отправку в ремонт.'
 
     device_get = DeviceSend(
         device_id=existing_device.id,

@@ -2,11 +2,15 @@ from aiogram import types
 
 
 def device_kb():
-    buttons = [[
-        types.InlineKeyboardButton(text="Принять с ремонта", callback_data="get_device"),
-        types.InlineKeyboardButton(text="Отправить в ремонт", callback_data="send_device"),
-        types.InlineKeyboardButton(text="Ничего", callback_data="no_trigger"),
-    ]]
+    buttons = [
+        [
+            types.InlineKeyboardButton(text="Принять с ремонта", callback_data="get_device"),
+            types.InlineKeyboardButton(text="Отправить в ремонт", callback_data="send_device"),
+        ],
+        [
+            types.InlineKeyboardButton(text="Ничего", callback_data="no_trigger"),
+        ]
+    ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     return keyboard
 

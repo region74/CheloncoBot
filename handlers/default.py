@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart, Command, StateFilter
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
@@ -62,9 +62,19 @@ async def command_report(message: Message) -> None:
 
 @router.message(StateFilter(None), Command('info'))
 async def command_info(message: Message) -> None:
-    await message.answer(f'Полноценная инструкция по работе с ботом появится после реализации функционала')
+    await message.answer(
+        '1) <b>Сформируйте</b> ссылку в формате(тут нет пробелов и переносов):\nhttрs://t.me/chelonco174_bot?start=тип_фирма_модель_инв.номер\n'
+        '<i>Должно получиться примерно так:</i>\nhttрs://t.me/chelonco174_bot?start=printer_HP_404dw_210000139224-23b\n'
+        '2) <b>Сформируйте</b> QR код готовой ссылки, например, на этом <a href="http://qrcoder.ru/">сайте</a>\n'
+        '3) <b>Отсканируйте</b> QR код устройства и следуйте пунктам меню бота\n\n'
+        'Доступные типы для устройств при заполнении ссылки:\nprinter, pc, setevoe\n\n'
+        '<b><u>ВАЖНО</u></b>: в ссылке не должно быть русских букв и символов по типу "/". В инвентарном номере слеши заменяем на "-".\n'
+        'В ссылке, в качестве разделителя данных для распознавания, используется нижнее подчеркивание, не пропускаем их!',
+        parse_mode='HTML'
+    )
 
 
 @router.message(StateFilter(None))
-async def any_message(message: Message) -> None:
-    await message.answer('Бот в разработке и тестировании')
+async def any_message(message: Message, bot: Bot) -> None:
+    animation_id = 'CgACAgQAAxkBAAIDE2bn4iw0tAf1TUvrvtNQdaWuiYRrAAJNAwAChXUFUxeXYq7OM8RyNgQ'
+    await bot.send_animation(message.from_user.id, animation_id)
