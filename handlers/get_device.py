@@ -57,6 +57,8 @@ async def get_device_comment(message: Message, state: FSMContext, session: Async
         result = await orm_get_device(session, data)
         if result:
             await message.answer(result)
+            await state.set_state(None)
+            await state.clear()
         else:
             await state.clear()
             await message.answer('Спасибо! Данные сохранены ✅')
