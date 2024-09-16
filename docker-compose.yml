@@ -43,6 +43,7 @@ services:
       - compose_net
 
   telegram_bot:
+    <<: *common
     build:
       context: . # Путь к директории с Dockerfile
       dockerfile: Dockerfile # Имя Dockerfile
