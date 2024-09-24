@@ -7,7 +7,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from config import TOKEN_BOT
-from database.engine import create_db, drop_db, session_maker
+from database.engine import create_db, session_maker
 from handlers import default, get_device, send_device
 from middlewares.db import DataBaseSession
 
@@ -28,8 +28,6 @@ async def on_startup():
 async def main():
     logging.info('Запуск бота @chelonco174_bot')
     try:
-        await create_db()
-
         dp.startup.register(on_startup)
         dp.update.middleware(DataBaseSession(session_pool=session_maker))
         dp.include_routers(default.router, get_device.router, send_device.router)
