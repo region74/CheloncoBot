@@ -10,4 +10,4 @@ WORKDIR /app
 COPY .env /app/.env
 RUN pip install --no-cache-dir -r requirements.txt
 ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app"
-CMD ["python", "-u", "main.py"]
+CMD ["sh", "-c", "make migrate && python -u main.py"]

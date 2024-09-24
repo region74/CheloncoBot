@@ -76,5 +76,4 @@ async def command_info(message: Message) -> None:
 
 @router.message(StateFilter(None))
 async def any_message(message: Message, bot: Bot) -> None:
-    animation_id = 'CgACAgQAAxkBAAIDE2bn4iw0tAf1TUvrvtNQdaWuiYRrAAJNAwAChXUFUxeXYq7OM8RyNgQ'
-    await bot.send_animation(message.from_user.id, animation_id)
+    await bot.send_message(message.from_user.id, message.text)
