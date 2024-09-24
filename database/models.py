@@ -14,7 +14,7 @@ class Device(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     number: Mapped[str] = mapped_column(String(50), nullable=False)
-    category: Mapped[str] = mapped_column(String(100), nullable=False)
+    category: Mapped[str] = mapped_column(String(50), nullable=False)
     firma: Mapped[str] = mapped_column(String(50), nullable=False)
     model: Mapped[str] = mapped_column(Text)
     place: Mapped[str] = mapped_column(String(150), nullable=True, default='Undefined')
