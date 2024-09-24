@@ -76,4 +76,4 @@ async def command_info(message: Message) -> None:
 
 @router.message(StateFilter(None))
 async def any_message(message: Message, bot: Bot) -> None:
-    await bot.send_message(message.from_user.id, message.text)
+    await bot.send_message(message.from_user.id, 'No comments')
