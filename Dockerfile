@@ -4,7 +4,7 @@ ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 RUN git clone https://region74:${GITHUB_TOKEN}@github.com/region74/CheloncoBot.git /app \
     && cd /app \
-    && git checkout alembic \
+    && git checkout master \
     && git pull
 WORKDIR /app
 COPY .env /app/.env
