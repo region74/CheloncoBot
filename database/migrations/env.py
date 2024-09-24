@@ -19,7 +19,7 @@ config = context.config
 # Формирование строки подключения
 config.set_main_option(
     'sqlalchemy.url',
-    f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost:5432/{POSTGRES_DB}"
+    f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres:5432/{POSTGRES_DB}"
 )
 
 # Interpret the config file for Python logging.
