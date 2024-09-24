@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 import database.models
-from config import POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
+from config import POSTGRES_URL
 
 from database.models import Base
 
@@ -18,8 +18,7 @@ config = context.config
 
 # Формирование строки подключения
 config.set_main_option(
-    'sqlalchemy.url',
-    f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres:5432/{POSTGRES_DB}"
+    'sqlalchemy.url', POSTGRES_URL
 )
 
 # Interpret the config file for Python logging.
